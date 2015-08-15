@@ -4,5 +4,5 @@ cipher = "ojJLnyRWNyyTliwhskbTAW/AYIqmCty4nu/14kohm5y0imcIruRc7aNo2tfACWuzbOLyM7
 key = "rAI1P8bpXoReutED8XOTT0lh26MWhWz87IH4t39LjJp3wxLkEHDKE2Er"
 
 aes = new AESBase64(128,128)
-ss = aes.decrypt(cipher, key, "ECB");
+ss = aes.decrypt(cipher, key, "ECB")
 console.log(ss)
