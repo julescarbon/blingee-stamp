@@ -17,6 +17,10 @@ var tag_queue = async.queue(function(task, callback){
   })
 }, 2)
 
+var swf_queue = async.queue(function(task, callback){
+  fetch_swf(task, callback)
+}, 4)
+
 fs.mkdir('data', function(err){
   tag_queue.push({ tag: "cat", page: 1 })
 })
@@ -38,23 +42,25 @@ function fetch_tag (tag, page, callback) {
         page_count = +line.split("Stamps [p. 1 of ")[1].split("]")[0]
       }
       else if (line.indexOf('addStampToBlingeeMaker') !== -1 && line.indexOf("href") !== -1) {
-        fetch_swf(line, tag)
+        swf_queue.push({ line: line, tag: tag, page: page })
       }
     })
     callback(page_count)
   })
 }
-function fetch_swf (line, tag) {
-  var cipher = line.split("addStampToBlingeeMaker('")[1].split("')")[0]
+function fetch_swf (task, callback) {
+  var cipher = task.line.split("addStampToBlingeeMaker('")[1].split("')")[0]
   var xml = aes.decrypt(cipher, aes_key, "ECB").split('"')
   var id = +xml[1]
   var swf_url = xml[3]
   
   make_id_dir(id, function(dir){
     var dest = dir + "/" + id + ".swf"
-    fs.exists(dest, function(exists){
-      if (exists) return
-      request(swf_url).pipe(fs.createWriteStream(dest))
+    fs.stat(dest, function(err, exists){
+      if (exists && exists.size) {
+        return callback()
+      }
+      request(swf_url, callback).pipe(fs.createWriteStream(dest))
     })
   })
 }
