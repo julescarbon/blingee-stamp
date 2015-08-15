@@ -1,40 +1,47 @@
-var request = require('request')
 var fs = require('fs')
+var async = require('async')
+var request = require('request')
 
 var AESBase64 = require('./lib/aes')
 var aes = new AESBase64 (128, 128)
 var aes_key = "rAI1P8bpXoReutED8XOTT0lh26MWhWz87IH4t39LjJp3wxLkEHDKE2Er"
 
-
+var tag_queue = async.queue(function(task, callback){
+  fetch_tag(task.tag, task.page, function(page_count){
+    if (page_count > 1) {
+      for (var i = 2; i <= page_count; i++) {
+        tag_queue.push({ tag: task.tag, page: i })
+      }
+    }
+    callback()
+  })
+}, 2)
 
 fs.mkdir('data', function(err){
-  fetch_tag("cat")
+  tag_queue.push({ tag: "cat", page: 1 })
 })
 
-function fetch_tag (tag) {
-  page_count = 1
-  fetch_tag_page(tag, 1, function(body){
+function fetch_tag (tag, page, callback) {
+  var page_count = 1
+  
+  console.log("fetch", tag, "page", page)
+
+  request("http://blingee.com/stamp/embedded_list?query=" + encodeURIComponent(tag) + "&page=" + page, function(error, response, body){
+    if (response.statusCode !== 200) {
+      console.error('error fetching tag', tag, page)
+      callback(0)
+      return
+    }
     var lines = body.split("\n")
     lines.forEach(function(line){
-      if (line.indexOf("<title>") !== -1) {
+      if (page == 1 && line.indexOf("<title>") !== -1) {
         page_count = +line.split("Stamps [p. 1 of ")[1].split("]")[0]
       }
       else if (line.indexOf('addStampToBlingeeMaker') !== -1 && line.indexOf("href") !== -1) {
         fetch_swf(line, tag)
       }
     })
-    if (page_count > 1) {
-      // fetch next page
-    }
-  })
-}
-function fetch_tag_page (tag, page, callback) {
-  request("http://blingee.com/stamp/embedded_list?query=" + encodeURIComponent(tag) + "&page=" + page, function(error, response, body){
-    if (response.statusCode !== 200) {
-      console.error('error fetching tag', tag, page)
-      return
-    }
-    callback(body)
+    callback(page_count)
   })
 }
 function fetch_swf (line, tag) {
