@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC",
+  "license": "LNT",
   "dependencies": {
     "async": "^1.4.2",
     "btoa": "^1.1.2",
