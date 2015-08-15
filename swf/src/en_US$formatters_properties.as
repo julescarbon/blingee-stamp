@@ -1,0 +1,32 @@
+﻿package {
+    import mx.resources.*;
+
+    public class en_US$formatters_properties extends ResourceBundle {
+
+        public function en_US$formatters_properties(){
+            super("en_US", "formatters");
+        }
+        override protected function getContent():Object{
+            var _local1:Object = {
+                zipCodeFormat:"#####",
+                defaultInvalidFormatError:"Invalid format",
+                pm:"PM",
+                useThousandsSeparator:"true",
+                useNegativeSign:"true",
+                am:"AM",
+                areaCode:"-1",
+                validPatternChars:"+()#- .",
+                phoneNumberFormat:"(###) ###-####",
+                defaultInvalidValueError:"Invalid value",
+                areaCodeFormat:"(###)",
+                monthNamesShort:"Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec",
+                numberFormatterPrecision:"-1",
+                dayNamesShort:"Sun,Mon,Tue,Wed,Thu,Fri,Sat",
+                rounding:"none",
+                currencyFormatterPrecision:"-1"
+            };
+            return (_local1);
+        }
+
+    }
+}//package 
