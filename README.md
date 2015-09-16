@@ -1,7 +1,7 @@
 blingee-stamp
 =============
 
-Scraper for Blingee stamps, which PNG animations stored as SWFs.
+Scraper for Blingee stamps, which are PNG animations stored as SWFs.
 
 PNGs can be extracted from the SWFs using the included tool swf2png.js, which requires `swfextract`, part of [swftools](http://wiki.swftools.org/wiki/Main_Page).  Special thanx to timb for this.
 
